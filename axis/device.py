@@ -6,6 +6,7 @@ from .configuration import Configuration
 from .vapix import Vapix
 from .streammanager import StreamManager
 from .event_stream import EventManager
+from .devicemanager import DeviceManager
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ class AxisDevice:
         self.vapix = Vapix(self.config)
         self.stream = StreamManager(self.config)
         self.event = None
+        self.devicemanager = DeviceManager(self.config, self.vapix)
 
     def start(self) -> None:
         """Start functionality of device."""
