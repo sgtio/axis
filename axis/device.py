@@ -3,10 +3,10 @@
 import logging
 
 from .configuration import Configuration
+from .devicemanager import DeviceManager
 from .vapix import Vapix
 from .streammanager import StreamManager
 from .event_stream import EventManager
-from .devicemanager import DeviceManager
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -14,13 +14,13 @@ _LOGGER = logging.getLogger(__name__)
 class AxisDevice:
     """Creates a new Axis device.self."""
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, session, **kwargs) -> None:
         """Initialize device functionality."""
         self.config = Configuration(**kwargs)
         self.vapix = Vapix(self.config)
         self.stream = StreamManager(self.config)
         self.event = None
-        self.devicemanager = DeviceManager(self.config, self.vapix)
+        self.devicemanager = DeviceManager(self.config, self.vapix, session)
 
     def start(self) -> None:
         """Start functionality of device."""

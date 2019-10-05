@@ -1,7 +1,8 @@
 """Read events and parameters from your Axis device."""
 
-import asyncio
+import aiohttp
 import argparse
+import asyncio
 import logging
 import sys
 
@@ -10,9 +11,10 @@ from axis import AxisDevice
 
 async def main(args):
     loop = asyncio.get_event_loop()
+    async_session = aiohttp.ClientSession(loop=loop)
     device = AxisDevice(
         loop=loop, host=args.host, username=args.username,
-        password=args.password, port=args.port)
+        password=args.password, port=args.port, session=async_session)
 
     if args.params:
         await loop.run_in_executor(None, device.vapix.initialize_params)
@@ -29,6 +31,8 @@ async def main(args):
         device.enable_events(event_callback=event_handler)
         device.start()
 
+    print(await device.devicemanager.retrieve_latest_fw_version())
+
     try:
         while True:
             await asyncio.sleep(1)
@@ -38,7 +42,7 @@ async def main(args):
 
     finally:
         device.stop()
-
+        await async_session.close()
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(message)s', level=logging.DEBUG)
